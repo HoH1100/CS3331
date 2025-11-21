@@ -1,9 +1,0 @@
-numpy
-pandas
-matplotlib
-scikit-learn
-gym==0.26.2
-gymnasium
-torch
-tensorflow
-tqdm
