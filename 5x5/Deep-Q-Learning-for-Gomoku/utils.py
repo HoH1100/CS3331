@@ -1,8 +1,13 @@
-from keras.models import Sequential, model_from_json
-from keras.layers.core import Dense, Dropout, Activation
-from keras.optimizers import SGD
-from keras.layers.advanced_activations import LeakyReLU
-import keras
+# from keras.models import Sequential, model_from_json
+# from keras.layers.core import Dense, Dropout, Activation
+# from keras.optimizers import SGD
+# from keras.layers.advanced_activations import LeakyReLU
+# import keras
+
+from tensorflow.keras.models import Sequential, model_from_json  
+from tensorflow.keras.layers import Dense, Dropout, Activation, LeakyReLU  
+from tensorflow.keras.optimizers import SGD  
+import tensorflow.keras as keras
 
 import numpy as np
 import pickle
@@ -13,19 +18,23 @@ from gomoku_game import make_move
 
 def init_agent(hidden_size, layers, lr=1e-3, width=20, alpha=0.1, moment=0.9, loss='mse'):
 	model = Sequential()
-	model.add(Dense(2 * width**2, init='lecun_uniform', input_shape=(2 * width**2,)))
+	# model.add(Dense(2 * width**2, init='lecun_uniform', input_shape=(2 * width**2,)))
+	model.add(Dense(2 * width**2, kernel_initializer='lecun_uniform', input_shape=(2 * width**2,)))
 	model.add(LeakyReLU(alpha=alpha))
 
 	for i in range(layers):
-		model.add(Dense(hidden_size, init='lecun_uniform'))
+		# model.add(Dense(hidden_size, init='lecun_uniform'))
+		model.add(Dense(hidden_size, kernel_initializer='lecun_uniform'))
 		model.add(LeakyReLU(alpha=alpha))
 		model.add(Dropout(0.2))
 
 	# linear output layer to generate real-valued outputs
-	model.add(Dense(width**2, init='lecun_uniform'))
+	# model.add(Dense(width**2, init='lecun_uniform'))
+	model.add(Dense(width**2, kernel_initializer='lecun_uniform'))	
 	model.add(Activation('linear'))
 
-	opt = SGD(lr=lr, momentum=moment, decay=1e-18, clipnorm=1.)
+	# opt = SGD(lr=lr, momentum=moment, decay=1e-18, clipnorm=1.)
+	opt = SGD(learning_rate=lr, momentum=moment, clipnorm=1.)
 	model.compile(loss=loss, optimizer=opt)
 
 	return model
@@ -46,7 +55,8 @@ def load_agent(filename, lr=1e-3, moment=0.9):
 
 	agent = model_from_json(json_model)
 	agent.set_weights(weights)
-	opt = SGD(lr=lr, momentum=moment, decay=1e-18, nesterov=False)
+	# opt = SGD(lr=lr, momentum=moment, decay=1e-18, nesterov=False)
+	opt = SGD(learning_rate=lr, momentum=moment, nesterov=False)
 	agent.compile(loss='mse', optimizer=opt)
 
 	return agent
@@ -86,6 +96,9 @@ def compute_label(maxQ, max_furtherQ, player, action, reward,
 	# the game proceeds - use the policy the compute y of the move
 	if reward[player] == keepgoing_reward:
 		update = reward[player] + (gamma * maxQ) + (gamma2 * max_furtherQ)
+
+		update = np.clip(update, -1000, 1000)	
+  
 		y_riv = None
 	# the game terminates y and y_riv are just the rewards itself
 	else:

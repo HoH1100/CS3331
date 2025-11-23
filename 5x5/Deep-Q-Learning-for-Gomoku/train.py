@@ -79,9 +79,20 @@ def training(agent1, agent2, config, save_path, verb=[0, 0]):
 			save_agent(agent1, path_1)
 			path_2 = os.path.join(save_path, "{}_{}.pkl".format(config['agent_name_2'], i))
 			save_agent(agent2, path_2)
+   
+			if i > 0:
+				last_player_weights_1 = agent1.layers[-1].get_weights()
+				agent1.layers[-1].set_weights([
+					np.random.randn(*w.shape) * 0.01 for w in last_player_weights_1
+				])
+   
+				last_player_weights_2 = agent2.layers[-1].get_weights()
+				agent2.layers[-1].set_weights([
+					np.random.randn(*w.shape) * 0.01 for w in last_player_weights_2
+				])
 
-		if config['epsilon'] >= 0.3:
-			config['epsilon'] -= 1/config['epoch']
+		if config['epsilon'] >= 0.1:
+			config['epsilon'] -= 0.7/config['epoch']
 
 		log_msg = 'Epoch: {}, step: {}'.format(i, count)
 		print(log_msg)

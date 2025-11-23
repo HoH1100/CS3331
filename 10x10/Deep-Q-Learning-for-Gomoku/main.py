@@ -5,7 +5,8 @@ import sys
 import os
 import ast
 from train import train_agents
-import keras
+# import keras
+import tensorflow.keras as keras
 
 random.seed(17)
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
@@ -19,7 +20,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	paras = {'new': args.new, 'agent_name_1': 'agent_1', 'agent_name_2': 'agent_2', 'epoch': args.epoch, 
-				'layer_num': 4, 'hidden_size': 768, 'gamma': 0.95, 'gamma2': 0.95, 'lr': 1e-4, 'width': 10, 'epsilon': 0.8, 
+				'layer_num': 4, 'hidden_size': 768, 'gamma': 0.9, 'gamma2': 0.9, 'lr': 1e-4, 'width': 10, 'epsilon': 0.8, 
 				'win_reward': 500, 'lose_reward':-500, 'even_reward':-100, 'keepgoing_reward': -10, 'buffersize': 100, 
 				'batch_size': 32
 		}
